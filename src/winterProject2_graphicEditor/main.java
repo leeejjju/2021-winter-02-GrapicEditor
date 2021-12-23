@@ -9,6 +9,7 @@ public class main extends JFrame {
 	 2021-12-23-12:00~ 2021-12-28-17:00
 	 2021-winter 과제2, 그래픽 에디터 만들기 
 	 HGU 전산전자공학부_ 22100579 이진주
+	 깃헙연동됨!
 	 */
 	private static final long serialVersionUID = 1L;
 
