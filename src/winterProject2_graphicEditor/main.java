@@ -6,7 +6,6 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.awt.event.*;
-import javax.swing.event.*;
 
 
 //메인 클래스 
@@ -51,7 +50,6 @@ public class main extends JFrame {
       setting.add(Title); //라벨 프레임에 넣기
       setting.setVisible(true);
       
-      
       //입력창과 라벨.. 
       JLabel giveMeTitle = new JLabel("title: ");
       giveMeTitle.setBounds(30,40,100,50);
@@ -71,7 +69,6 @@ public class main extends JFrame {
       
       //*********************whyrano*******************************************************
       JTextField getTitle = new JTextField(50);
-      getTitle.setVisible(true);
       getTitle.setBounds(70,55,270,25);
       JTextField getSizeX = new JTextField();
       getSizeX.setBounds(70,80,100,25);
@@ -112,20 +109,16 @@ public class main extends JFrame {
          
          System.out.println("Enjoy your drawing :D"); //따땃한 말한마디
          
-         new GraphicEditor(title, sizeX, sizeY); //그림판을 소환하고 턴을 마친다 
-         System.out.println("환장하겟내. 방금 그림판 인스턴트 생성됨");
+         new GraphicEditor(title, sizeX, sizeY); //그림판을 소환하고 턴을 마친다
          GraphicEditor.graphicEditor();
-         System.out.println("환장하겟내. 방금 그림판 소환");
    
       });
       
    }
    
    
-   //메인 메소드 - 그저 모든걸 실행함... 
+   //메인 메소드 - 그저 모든걸 실행함...  
    public static void main(String[] args) {
-      
-      System.out.println("환장하겟내. 메인");
       makeFrame();
       
    }
@@ -161,7 +154,6 @@ class GraphicEditor{
    
    //생성자로 초기화 
    GraphicEditor(String t, int x, int y){
-      System.out.println("환장하겟내. 프레임인스턴트 만들어짐");
       if(t.length() != 0) title = t;
       if(x != 0) sizeX = x;
       if(y != 0) sizeY = y;
@@ -170,8 +162,6 @@ class GraphicEditor{
    //그림판 틀 
    
    public static void graphicEditor() {
-      System.out.println("환장하겟내. 프레임만들기");
-      
       //기본프레임
       frame = new JFrame(title);
       frame.setSize(sizeX,sizeY);
@@ -637,19 +627,12 @@ class PreSave {
     
 }
 
-//dk 저장하려면 버퍼이미지여야만되는겅가... 
-//B = new BufferedImage(sizeX,sizeY, BufferedImage.TYPE_INT_RGB);
 
 /*
-//지우개랑 펜, 스프레이 등 그리기도구가 갖구있어야 할 것들
-interface drawingTools{
-   
-   
-   
-}
+
 
 //라인, 사각형, 원 등 도형도구가 갖구있어야 할 것들
-interface shapeTools {
+interface shapes {
    
    //조정값미리보기?(흐리게하면 좋고) 
    static void seePreview() {
@@ -668,16 +651,6 @@ interface shapeTools {
    
    //도형 지우기 
    static void deletShape() {
-      
-   }
-   
-   //색상변경
-   static void changeColor(String color) {
-      
-   }
-   
-   //굵기변경
-   static void changeThickness(int thickness) {
       
    }
    
