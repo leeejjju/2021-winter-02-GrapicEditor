@@ -1,7 +1,9 @@
 package winterProject2_graphicEditor;
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.awt.event.*;
 import javax.swing.event.*;
 
@@ -149,6 +151,7 @@ class GraphicEditor{
 	static int sizeX, sizeY;
 	static JFrame frame;
 	static JPanel newCanvas;
+	static BufferedImage B;
 	static JTextField newTextField;
 	static JLabel newLabel;
 	
@@ -172,7 +175,7 @@ class GraphicEditor{
 		frame.setLocationRelativeTo(null);//화면의 어느 위치에서 첫 등장할지>> null이면 자동 센터지정 
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);//프레임 닫으면 프로그램도 같이 종료.
 		frame.setLayout(new BorderLayout()); //레이아웃설정 볼더로
-		
+
 		canvas(); //그리기영역 소환
 		
 		//하단 인포영역 표시할 패널 만들고 거따 집어넣어준당 
@@ -307,6 +310,8 @@ class GraphicEditor{
 				else if(state.m == 6) {
 					A.drawOval((x1<x2)? x1:x2, (y1<y2)? y1:y2, Math.abs(x2-x1), Math.abs(y2-y1));
 				}
+				
+				A.dispose();
 			}
 			
 			Graphics r = newCanvas.getGraphics(); //그래픽스 만들어서 색설정 해주고 
@@ -402,6 +407,14 @@ class GraphicEditor{
 		JButton save =addButton("save", 0);
 		tools.add(save);
 		save.addActionListener(event->{
+			/*
+			try{
+			File file = new File("C:\\Java\\workspace\\winterProject2_graphicEditor\\imagesForButton\\haha.jpg");        // 파일의 이름을 설정한다
+			ImageIO.write(newCanvas, "jpg", file);                     // write메소드를 이용해 파일을 만든다
+			System.out.println("sdfsdf");
+			}catch(Exception e){
+				e.printStackTrace();
+			}*/
 			System.out.println("저장되었다고 하고싶습니다.");
 			//@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@저장 구현...해야대는디... 
 		});
@@ -426,7 +439,6 @@ class GraphicEditor{
 			return tool; //방금만든거랑 연동된 주,,소..? 반환하기
 		}
 		
-		
 	}
 	
 	// 캔버스영역...? ㅇㅒ는 창 종료 전까진 계속 유지되어야함 
@@ -436,12 +448,12 @@ class GraphicEditor{
 		newCanvas = new JPanel();
 		frame.add(newCanvas, BorderLayout.CENTER);
 		newCanvas.setLayout(null);
-		newCanvas.setBackground(Color.WHITE);
+		newCanvas.setBackground(Color.WHITE);	
+		//sB = new BufferedImage(sizeX,sizeY, BufferedImage.TYPE_INT_RGB);
 		
 		//위에 툴바 추가하고
 		JMenuBar tools = new JMenuBar();
 		frame.setJMenuBar(tools);
-
 		 
 		//마우스 이벤트(드래그, 움직임)에 따라 죄측하단에 좌표표시. 
 		newCanvas.addMouseMotionListener(new MouseMotionAdapter() {  
@@ -454,10 +466,20 @@ class GraphicEditor{
 
 				//자유선(펜)긋기 
 				if(state.m == 2) {
+					
 					if(state.mL == 1) { //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@점선 손보기 
 						float[] dash=new float[]{state.t/3,state.t/3,state.t/3*5,state.t/3*7};
+						
+						try {
+							Thread.sleep(50);
+						} catch (InterruptedException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+						
 					    A.setStroke(new BasicStroke(state.t, 1,BasicStroke.CAP_ROUND, 0,dash, 30));
 					}
+					
 					A.drawLine(e.getX(), e.getY(), ox, oy); 
 				}
 				//지우개
@@ -513,7 +535,6 @@ class showInfo {
 		info.add(currentThickness);
 	}
 	
-	//필요시 m,c,t에 직접 접근해서 값 변경시킨후 새로고침호출하면 될듯..? 
 	//갱신? 새로고침? 
 	public static void F5info() {
 		if(state.m == 3) { //스탬프모드일땐 그 도형상태까지 추가해서 표시되도록
@@ -527,12 +548,13 @@ class showInfo {
 		currentThickness.setText(" | thickness: "+state.t+" px |");
 	}
 	
-	//색상설정 메소드
+	//속성설정 메소드
 	public static void setState(Graphics2D a, boolean e){
 		
+		//선굵기 설정
 		a.setStroke(new BasicStroke(state.t,BasicStroke.CAP_ROUND, 0));
 		
-		//이거 반복문으로 안되나ㅜ 
+		//색상인데 이거 반복문으로 안되나ㅜ 
 		if(e) {
 			a.setColor(Color.white);
 			return;
@@ -566,7 +588,8 @@ class showInfo {
 	}
 }
 
-
+//dk 저장하려면 버퍼이미지여야만되는겅가... 
+//B = new BufferedImage(sizeX,sizeY, BufferedImage.TYPE_INT_RGB);
 
 /*
 //지우개랑 펜, 스프레이 등 그리기도구가 갖구있어야 할 것들
