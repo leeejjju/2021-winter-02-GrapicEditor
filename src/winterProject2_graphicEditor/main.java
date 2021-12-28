@@ -69,9 +69,9 @@ public class main extends JFrame {
       //*********************whyrano*******************************************************
       JTextField getTitle = new JTextField(50);
       getTitle.setBounds(70,55,270,25);
-      JTextField getSizeX = new JTextField();
+      JTextField getSizeX = new JTextField(50);
       getSizeX.setBounds(70,80,100,25);
-      JTextField getSizeY = new JTextField();
+      JTextField getSizeY = new JTextField(50);
       getSizeY.setBounds(240,80,100,25);
 
       setting.add(getTitle);
@@ -134,7 +134,6 @@ class state{
    static int mS = 0; //스탬프 모양... 0: 원, 1:사각형 2: 둥근사각형 
    static int mL = 0; //펜 타입. 0:실선 1:점선 2:그..처음 실패작  
 }
-
 
 //그림판 만들기 
 class GraphicEditor{
@@ -441,6 +440,26 @@ class GraphicEditor{
          }
       });
       
+      /*
+      //컨트롤z로도 뒤로가기 하고싶어서... 근데 망한듯 
+      newCanvas.addKeyListener(new KeyAdapter() {
+    	  public void keyPressed(KeyEvent e) {
+    		  if(e.getKeyCode() == KeyEvent.VK_CONTROL && e.getKeyCode() == KeyEvent.VK_Z) {
+    			  System.out.println("ㅠㅜㅜ인식됨 ");
+    			  try{
+    				  //타이틀 이름으로 현재 버퍼이미지 저장하기 
+    				  File file = new File( "C:\\Java\\workspace\\winterProject2_graphicEditor\\imagesForButton\\"+title+".jpg");        // 파일의 이름을 설정한다
+    		  	      ImageIO.write(B, "jpg", file);                     // write메소드를 이용해 파일을 만든다
+    		  	      System.out.println(title+" 제목으로 저장되었습니다");
+    		           
+    			  }catch(Exception e1){
+    				  e1.printStackTrace();
+    			  }
+    		  }
+    	  }
+      });
+      */
+      
    }
    
    //버튼생성이나 클릭에 따른 아이콘교체에 쓸 문자열 배열들 
@@ -538,6 +557,7 @@ class GraphicEditor{
             //지우개
             else if(state.m == 1) { 
                showInfo.setState(A, true); //무지성 하얗게 설정 
+               b.setColor(Color.white); //버퍼도... 
                A.drawLine(e.getX(), e.getY(), ox, oy);
                b.drawLine(e.getX(), e.getY(), ox, oy);
             }
@@ -560,7 +580,6 @@ class GraphicEditor{
       }); 
    }
 }
-
 
 //현재 좌표랑 선택중 옵션 등을 표시하는 스태틱덩어리 클래스. 계속 외부에서 간섭해서 값이 바뀌어야함 
 class showInfo {
