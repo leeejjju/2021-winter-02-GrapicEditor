@@ -5,6 +5,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.Stack;
 import java.awt.event.*;
 
 
@@ -24,12 +25,12 @@ public class main extends JFrame {
        라인, 사각형, 원, 스케치, 텍스트 base +패턴(스탬프)
        폴리라인, 스프레이,  option
     2. 속성설정 기능
-       색상, 굵기 base
-       스타일(점선 실선 등), 채우기(폐곡선) option
+       색상, 굵기 base +스타일(점선 실선 등)
+       채우기(폐곡선) option
     3. 부가기능
        지우개(픽셀단위, 오브젝단위), 세이브앤로드 base  (안되면 그룹핑)
        드래그앤그랍, 러버밴드, 리사이즈, 로테이트, 뒤로가기, 그룹핑, 복붙 option
-    4. 하나 더!! 뭐할까... 역시 뒤로가기? 
+    4. 그리고 하나 더. 역시 뒤로가기? 
     
      */
 
@@ -133,8 +134,8 @@ class state{
    static int m = 0; //모드넘버 
    static int c = 0; //컬러넘버
    static int t = 3; //굵기넘버 
-   static int mS = 0; //스탬프 모양... 0: 원, 1:사각형 
-   static int mL = 0; //펜 타입. 0:실선 1:점선 
+   static int mS = 0; //스탬프 모양... 0: 원, 1:사각형 2: 둥근사각형 
+   static int mL = 0; //펜 타입. 0:실선 1:점선 2:그..처음 실패작 
    
 }
 
@@ -197,16 +198,21 @@ class GraphicEditor{
          tools.add(tool[i]);//패널에 추가 
          final int n = i;
          //초간단 기능추가.. 
-         if(i == 0) {
+         if(i == 0) { //@@@@@@@@@@@@@@@@@@@@@@뒤로가기@@@@@@@@@@@@@@@@@
             tool[i].addActionListener(event ->{ 
                //버퍼이미지에다가 파일에서 읽어온 저장된이미지 넣고 
                preB = null;
+               //이때 저장된 이미지란 page-1번째 preSave 이미지. 동시에 페이지도 줄이기 
                try {
-               preB = ImageIO.read(new File("C:\\Java\\workspace\\winterProject2_graphicEditor\\imagesForButton\\preWork.jpg"));
-            } catch (IOException e1) {
-               e1.printStackTrace();
-            }
- 
+            	   if(PreSave.page == 0) { //페이지가 0번째면 페이지가 더 줄어들면 안댐... 
+            		   preB = ImageIO.read(new File("C:\\Java\\workspace\\winterProject2_graphicEditor\\preSave\\preWork"+ PreSave.page+".jpg"));
+            	   }else {
+            		   preB = ImageIO.read(new File("C:\\Java\\workspace\\winterProject2_graphicEditor\\preSave\\preWork"+ --PreSave.page+".jpg"));
+            	   }
+	              	 } catch (IOException e1) {
+	              	e1.printStackTrace();
+	           }
+               
                //그놈을 메인버퍼이미지랑 뉴캔버스 라벨에 그려주기... 화질구지네요 
                Graphics2D a = (Graphics2D)newCanvas.getGraphics();
                Graphics2D pre = (Graphics2D)B.getGraphics();
@@ -229,11 +235,11 @@ class GraphicEditor{
                }
                //라인타입 바꿔주는 거시긴디... 
                else if(n == 2) {
-                  if(state.mL == 0) {
-                     state.mL = 1;
-                  }else if(state.mL == 1) {
-                     state.mL = 0;
-                  }
+            	   if(state.mL < 2) {
+                       state.mL++;
+                    }else{
+                       state.mL = 0;
+                    }
                   img = new ImageIcon(path+nameOfPens[state.mL]);
                   tool[n].setIcon(img);
                }
@@ -440,7 +446,7 @@ class GraphicEditor{
    
 
    static String[] nameOfTools = {"", "erase.png", "pen.png", "stamp.png", "line.png", "rect.png", "circle.png", "", "thicknesss.png"};
-   static String[] nameOfPens = {"pen01.png", "pen02.png"};
+   static String[] nameOfPens = {"pen01.png", "pen02.png", "pen03.png"};
    static String[] nameOfStamps = {"stamp02.png", "stamp03.png", "stamp01.png"};
    static String[] nameOfThickness = {"thicknesss01.png","thicknesss02.png","thicknesss03.png","thicknesss04.png","thicknesss05.png"};
    static String path = "C:\\Java\\workspace\\winterProject2_graphicEditor\\imagesForButton\\";
@@ -524,8 +530,14 @@ class GraphicEditor{
                    b.setStroke(new BasicStroke(state.t, 1,BasicStroke.CAP_ROUND, 0,dash, 30));
                }
                
-               A.drawLine(e.getX(), e.getY(), ox, oy); 
-               b.drawLine(e.getX(), e.getY(), ox, oy); 
+               if(state.mL != 2) {
+                   A.drawLine(e.getX(), e.getY(), ox, oy); 
+                   b.drawLine(e.getX(), e.getY(), ox, oy); 
+               }else {
+                   A.fillOval(e.getX(), e.getY(), state.t, state.t); 
+                   b.fillOval(e.getX(), e.getY(), state.t, state.t); 
+               }
+
             }
             //지우개
             else if(state.m == 1) { 
@@ -559,7 +571,7 @@ class showInfo {
    };
    static String nameOfMode[] = {"default", "eraser", "pen", "stamp", "line", "rectangle", "circle", "text"};
    static String nameOfStamp[] = {"circle", "rectangle", "round rectangle"};
-   static String nameOfLine[] = {"Solid", "dotted"};
+   static String nameOfLine[] = {"solid", "dotted", "gradual"};
    
    static JLabel currentOption;
    static JLabel currentColor;
@@ -602,7 +614,7 @@ class showInfo {
       a.setStroke(new BasicStroke(state.t,BasicStroke.CAP_ROUND, 0));
       
       //색상인데 이거 반복문으로 안되나ㅜ 
-      if(e) {
+      if(e) { //지우개면 무지성 하얀색으로 설정되도록 
          a.setColor(Color.white);
          return;
       }
@@ -634,18 +646,20 @@ class showInfo {
    }
 }
 
-class PreSave {
-   public static void preSave() {
-       try{
-           File file = new File("C:\\Java\\workspace\\winterProject2_graphicEditor\\imagesForButton\\preWork.jpg");        // 파일의 이름을 설정한다
-           ImageIO.write(GraphicEditor.B, "jpg", file); 
-           
-       }catch(Exception e1){
-              e1.printStackTrace();
-       }
-   } 
-}
+//뒤로가기를 위해 매 실행마다 이미지로 누적저장하기 
+class PreSave { //차곡차곡 쌓이도록 뭔가 시도해보기 
+		static int page = 0; //지금 몇번째 쌓고있나~ 뭐이런거 
+		
+	    public static void preSave() {
+	       try{ //이미지page번으로 저장되도록, 동시에 다음저장을 위해 페이지 증가 
+	           File file = new File("C:\\Java\\workspace\\winterProject2_graphicEditor\\preSave\\preWork"+page++ +".jpg");        // 파일의 이름을 설정한다
+	           ImageIO.write(GraphicEditor.B, "jpg", file); 
 
+	       }catch(Exception e1){
+	              e1.printStackTrace();
+	       }
+	   } 
+	}
 
 
 //해치웠나? 
