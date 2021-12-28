@@ -133,8 +133,8 @@ class state{
    static int m = 0; //모드넘버 
    static int c = 0; //컬러넘버
    static int t = 3; //굵기넘버 
-   static int mS = 1; //스탬프 모양... 0: 원, 1:사각형 
-   static int mL = 1; //펜 타입. 0:실선 1:점선 
+   static int mS = 0; //스탬프 모양... 0: 원, 1:사각형 
+   static int mL = 0; //펜 타입. 0:실선 1:점선 
    
 }
 
@@ -151,6 +151,7 @@ class GraphicEditor{
    static JLabel newLabel;
    static ImageIcon Board;
    static BufferedImage preB;
+   
    
    //생성자로 초기화 
    GraphicEditor(String t, int x, int y){
@@ -173,6 +174,7 @@ class GraphicEditor{
 
       canvas(); //그리기영역 소환
       
+      
       //하단 인포영역 표시할 패널 만들고 거따 집어넣어준당 
       JPanel info = new JPanel(); //패널만들고
       info.setLayout(new FlowLayout(FlowLayout.LEFT)); //레이아웃 좌측정렬로 지정하구
@@ -180,10 +182,12 @@ class GraphicEditor{
       new showInfo(); //속에 요소들로 쓸 인스턴트 생성
       showInfo.inputOptions(info); //옵션표시 집어넣어두기 
 
+      
       //버튼들..? 들어갈 툴바 
       JMenuBar tools = new JMenuBar(); //패널로 만들구
       tools.setLayout(new GridLayout(1,0));//한줄배치되는 그리드레이아웃으로  
       frame.add(tools, BorderLayout.NORTH); //위쪾에 바짝붙이기 
+      
       
       //버튼들을 반복문+배열로 넣으면 중복이 좀 줄어드려나? 아님 버튼을 추가하는 메소드를 만드까 
       JButton tool[] = new JButton[8]; //추가한 버튼들 차례대로 저장할 배열 
@@ -195,35 +199,33 @@ class GraphicEditor{
          //초간단 기능추가.. 
          if(i == 0) {
             tool[i].addActionListener(event ->{ 
-            	//버퍼이미지에다가 파일에서 읽어온 저장된이미지 넣고 
-            	preB = null;
-            	try {
-					preB = ImageIO.read(new File("C:\\Java\\workspace\\winterProject2_graphicEditor\\imagesForButton\\preWork.jpg"));
-				} catch (IOException e1) {
-					e1.printStackTrace();
-				}
+               //버퍼이미지에다가 파일에서 읽어온 저장된이미지 넣고 
+               preB = null;
+               try {
+               preB = ImageIO.read(new File("C:\\Java\\workspace\\winterProject2_graphicEditor\\imagesForButton\\preWork.jpg"));
+            } catch (IOException e1) {
+               e1.printStackTrace();
+            }
  
-            	//그놈을 메인버퍼이미지랑 뉴캔버스 라벨에 그려주기... 화질구지네요 
-            	Graphics2D a = (Graphics2D)newCanvas.getGraphics();
-            	Graphics2D pre = (Graphics2D)B.getGraphics();
-            	a.drawImage(preB, null, 0,0);
-            	pre.drawImage(preB, null, 0,0);
-            	System.out.println("되돌렸습니다");
+               //그놈을 메인버퍼이미지랑 뉴캔버스 라벨에 그려주기... 화질구지네요 
+               Graphics2D a = (Graphics2D)newCanvas.getGraphics();
+               Graphics2D pre = (Graphics2D)B.getGraphics();
+               a.drawImage(preB, null, 0,0);
+               pre.drawImage(preB, null, 0,0);
    
             });
          }else{
             tool[i].addActionListener(event ->{ //초간단 기능추가.. 
                state.m = n; //모드변경
-               showInfo.F5info(); //인포 새로고침
                //스탬프면 거시기 누를때마다 모양바뀌는것도 추가
                if(n == 3){
-                  if(state.mS == 0) {
-                     state.mS = 1;
-                  }else if(state.mS == 1) {
-                     state.mS = 2;
-                  }else if(state.mS == 2) {
-                     state.mS = 0;
-                  }
+            	   if(state.mS < 2) {
+                       state.mS++;
+                    }else{
+                       state.mS = 0;
+                    }
+                  img = new ImageIcon(path+nameOfStamps[state.mS]);
+                  tool[n].setIcon(img);
                }
                //라인타입 바꿔주는 거시긴디... 
                else if(n == 2) {
@@ -232,7 +234,10 @@ class GraphicEditor{
                   }else if(state.mL == 1) {
                      state.mL = 0;
                   }
+                  img = new ImageIcon(path+nameOfPens[state.mL]);
+                  tool[n].setIcon(img);
                }
+               showInfo.F5info(); //인포 새로고침
             });
          }
       }
@@ -277,9 +282,7 @@ class GraphicEditor{
                newTextField.setOpaque(false); //투명하게?해준다는데?머가적용된거람 
                newTextField.setBounds(x1-10, y1-10, 200, 20); //클릭한곳에서 배치하고... 
                newCanvas.add(newTextField); //캔버스에 추가... 
-               
-               //텍스트컬러 외주맡기고싶은딩... 
-               
+
                //텍스트필드에서 엔터 클릭되었을 때
                newTextField.addActionListener(new ActionListener() {
                   public void actionPerformed(ActionEvent e) {
@@ -389,7 +392,7 @@ class GraphicEditor{
       colors[11].setBackground(Color.magenta);
 
       
-      //굵기선택을 버튼으로 한다면? @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+      //굵기선택
       JButton thickness = addButton("#thicknes", 8);
       tools.add(thickness);
       thickness.addActionListener(event ->{ //초간단 기능추가.. 
@@ -399,6 +402,8 @@ class GraphicEditor{
             state.t = 3;
          }
          showInfo.F5info(); //라벨 새로고침 
+         img = new ImageIcon(path+nameOfThickness[state.t/3-1]);
+         thickness.setIcon(img);
       });
       
       
@@ -419,26 +424,44 @@ class GraphicEditor{
       JButton save =addButton("save", 0);
       tools.add(save);
       save.addActionListener(event->{
+    	 String path = "C:\\Java\\workspace\\winterProject2_graphicEditor\\imagesForButton\\";
 
          try{
-         File file = new File("C:\\Java\\workspace\\winterProject2_graphicEditor\\imagesForButton\\newWork.jpg");        // 파일의 이름을 설정한다
+         File file = new File(path+title+".jpg");        // 파일의 이름을 설정한다
          ImageIO.write(B, "jpg", file);                     // write메소드를 이용해 파일을 만든다
-         System.out.println("저장되었습니다");
+         System.out.println(title+" 제목으로 저장되었습니다");
          
          }catch(Exception e){
             e.printStackTrace();
          }
       });
+      
    }
+   
 
+   static String[] nameOfTools = {"", "erase.png", "pen.png", "stamp.png", "line.png", "rect.png", "circle.png", "", "thicknesss.png"};
+   static String[] nameOfPens = {"pen01.png", "pen02.png"};
+   static String[] nameOfStamps = {"stamp02.png", "stamp03.png", "stamp01.png"};
+   static String[] nameOfThickness = {"thicknesss01.png","thicknesss02.png","thicknesss03.png","thicknesss04.png","thicknesss05.png"};
+   static String path = "C:\\Java\\workspace\\winterProject2_graphicEditor\\imagesForButton\\";
+   static ImageIcon img;
 
    //기본 버튼 생성 메소드. 하얀색의, 선택한 키워드로 네이밍된 버튼 포인터 반환. 단, 네이밍 앞이 #이면 이미지로.. 
    public static JButton addButton(String name, int i) {
-      String[] nameOfTools = {"", "erase.png", "pen.png", "stamp.png", "line.png", "rect.png", "circle.png", "", "thicknesss.png"};
-            
+
+      
       if(name.charAt(0) == '#') {
-         String path = "C:\\Java\\workspace\\winterProject2_graphicEditor\\imagesForButton\\";
-         ImageIcon img = new ImageIcon(path+nameOfTools[i]);
+         
+         if(i == 2) { //펜
+        	 img = new ImageIcon(path+nameOfPens[state.mL]);
+         }else if(i == 3) { //스탬프
+        	 img = new ImageIcon(path+nameOfStamps[state.mS]);
+         }else if(i == 8) { //굵기
+        	 img = new ImageIcon(path+nameOfThickness[state.t/3-1]);
+         }else {
+        	 img = new ImageIcon(path+nameOfTools[i]);
+         }
+
          JButton tool = new JButton(img); //해당 이미지의 버튼 하나 만들고
          tool.setBackground(Color.white); //버.꾸 하고
          return tool; //방금만든거랑 연동된 주,,소..? 반환하기
@@ -535,8 +558,8 @@ class showInfo {
    static String nameOfColors[] = {"black", "dark gray", "lght gray", "red", "orange", "yellow", "white", "cyan", "pink", "green", "blue", "magenta"
    };
    static String nameOfMode[] = {"default", "eraser", "pen", "stamp", "line", "rectangle", "circle", "text"};
-   static String nameOfStamp[] = {"rectangle", "round rectangle", "circle"};
-   static String nameOfLine[] = {"dotted", "Solid"};
+   static String nameOfStamp[] = {"circle", "rectangle", "round rectangle"};
+   static String nameOfLine[] = {"Solid", "dotted"};
    
    static JLabel currentOption;
    static JLabel currentColor;
@@ -560,6 +583,7 @@ class showInfo {
    
    //갱신? 새로고침? 
    public static void F5info() {
+	   
       if(state.m == 3) { //스탬프모드일땐 그 도형상태까지 추가해서 표시되도록
          currentOption.setText(" | mode: "+nameOfMode[state.m]+" ("+nameOfStamp[state.mS]+")");
       }else if(state.m == 2){ //펜모드일때 이하생략
@@ -606,53 +630,24 @@ class showInfo {
          a.setColor(Color.BLUE);
       }else if(state.c == 11) {
          a.setColor(Color.magenta);
-      }
-      
+      } 
    }
 }
 
 class PreSave {
-	
-	public static void preSave() {
-	    try{
-	        File file = new File("C:\\Java\\workspace\\winterProject2_graphicEditor\\imagesForButton\\preWork.jpg");        // 파일의 이름을 설정한다
-	        ImageIO.write(GraphicEditor.B, "jpg", file);                     // write메소드를 이용해 파일을 만든다
-	        System.out.println("저장되었습니다.");
-	        
-	        }catch(Exception e1){
-	           e1.printStackTrace();
-	        }
-	}
-
-    
+   public static void preSave() {
+       try{
+           File file = new File("C:\\Java\\workspace\\winterProject2_graphicEditor\\imagesForButton\\preWork.jpg");        // 파일의 이름을 설정한다
+           ImageIO.write(GraphicEditor.B, "jpg", file); 
+           
+       }catch(Exception e1){
+              e1.printStackTrace();
+       }
+   } 
 }
 
 
-/*
+
+//해치웠나? 
 
 
-//라인, 사각형, 원 등 도형도구가 갖구있어야 할 것들
-interface shapes {
-   
-   //조정값미리보기?(흐리게하면 좋고) 
-   static void seePreview() {
-      
-   }
-   
-   //사이즈조절
-   static void controlSize(){
-      
-   }
-   
-   //각도조절
-   static void controlRotate(int rotate) {
-      
-   }
-   
-   //도형 지우기 
-   static void deletShape() {
-      
-   }
-   
-}
-*/
